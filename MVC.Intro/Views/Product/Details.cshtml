@@ -1,0 +1,68 @@
+@model MVC.Intro.Models.Product
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Product</h4>
+    <hr />
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-5">
+            <div class="product-img-placeholder rounded">
+                <img class="product-img" src="~/images/products/@(Model.Id).jpg" alt="Product image" onerror="this.style.display='none'" />
+                <div class="product-img-sheen"></div>
+            </div>
+        </div>
+        <div class="col-12 col-md-7">
+            <div class="shop-sidebar">
+                <h5 class="mb-2">Качи снимка (JPG)</h5>
+                <form asp-action="UploadImage" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" class="d-flex flex-column gap-2">
+                    <input type="file" name="image" accept="image/jpeg" class="form-control" />
+                    <button type="submit" class="btn btn-dark">Качи</button>
+                    <div class="small text-muted">Файлът се записва като: <code>/images/products/@(Model.Id).jpg</code></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @(Model.Name?.Replace("PRD_", ""))
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class = "col-sm-10">
+            @string.Format("€{0:0.00}", Model.Price)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Color)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Color)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Size)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Size)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+    <a asp-action="Index">Back to List</a>
+</div>

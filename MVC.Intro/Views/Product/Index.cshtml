@@ -1,0 +1,116 @@
+@model IEnumerable<MVC.Intro.Models.Product>
+@{
+    ViewData["Title"] = "Products";
+    var favoriteIds = Context.Session.GetFavoriteProductIds();
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+
+@functions {
+    private static string CleanName(string? name) => (name ?? string.Empty).Replace("PRD_", "");
+}
+
+<div class="shop-header d-flex flex-wrap gap-3 align-items-center justify-content-between mb-3">
+    <div>
+        <h1 class="mb-1">Suits</h1>
+        <div class="text-muted products-subtitle">Choose a color and size. Click “Details” for more.</div>
+    </div>
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+        <div class="input-group shop-search">
+            <span class="input-group-text">Търси</span>
+            <input class="form-control" placeholder="Например: PRD_Suit..." />
+        </div>
+        <a class="btn btn-dark" asp-controller="Product" asp-action="Create">+ Нов продукт</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <aside class="col-12 col-lg-3">
+        <div class="shop-sidebar">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h5 class="mb-0">Filters</h5>
+                <button class="btn btn-sm btn-outline-secondary" type="button" disabled>Reset</button>
+            </div>
+
+            <div class="mb-3">
+                <div class="fw-semibold mb-2">Categories</div>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-dark text-start" type="button" disabled>Suits</button>
+                    <button class="btn btn-outline-dark text-start" type="button" disabled>Shirts</button>
+                    <button class="btn btn-outline-dark text-start" type="button" disabled>Shoes</button>
+                    <button class="btn btn-outline-dark text-start" type="button" disabled>Accessories</button>
+                </div>
+                <div class="small text-muted mt-2">Filters are UI-only (no logic), just to look like a shop.</div>
+            </div>
+
+            <div class="mb-3">
+                <div class="fw-semibold mb-2">Color</div>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge rounded-pill bg-dark">Black</span>
+                    <span class="badge rounded-pill bg-secondary">Gray</span>
+                    <span class="badge rounded-pill text-dark" style="background:#dfe6e9">Light</span>
+                    <span class="badge rounded-pill" style="background:#1e3799">Blue</span>
+                    <span class="badge rounded-pill" style="background:#b71540">Red</span>
+                </div>
+            </div>
+
+            <div class="mb-1">
+                <div class="fw-semibold mb-2">Size</div>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge rounded-pill bg-light text-dark border">XS</span>
+                    <span class="badge rounded-pill bg-light text-dark border">S</span>
+                    <span class="badge rounded-pill bg-light text-dark border">M</span>
+                    <span class="badge rounded-pill bg-light text-dark border">L</span>
+                    <span class="badge rounded-pill bg-light text-dark border">XL</span>
+                    <span class="badge rounded-pill bg-light text-dark border">XXL</span>
+                    @for (var i = 76; i <= 96; i++)
+                    {
+                        var size = (i / 2m).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                        <span class="badge rounded-pill bg-light text-dark border">@size</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <section class="col-12 col-lg-9">
+        <div class="shop-grid">
+            @foreach (var item in Model)
+            {
+                <div class="product-card">
+                    <div class="product-media">
+                        <a class="btn product-fav" asp-controller="Favorites" asp-action="Toggle" asp-route-id="@item.Id" asp-route-returnUrl="@returnUrl" title="Любими">@(favoriteIds.Contains(item.Id) ? "♥" : "♡")</a>
+                        <div class="product-badges">
+                            <span class="badge text-bg-dark">New</span>
+                            @if (item.Price >= 500)
+                            {
+                                <span class="badge text-bg-warning">Premium</span>
+                            }
+                        </div>
+                        <div class="product-img-placeholder">
+                            <img class="product-img" src="~/images/products/@(item.Id).jpg" alt="@CleanName(item.Name)" onerror="this.onerror=null;this.src='/images/6.jpg';this.classList.add('product-img-fallback');" />
+                            <div class="product-img-sheen"></div>
+                        </div>
+                    </div>
+
+                    <div class="product-body">
+                        <div class="product-brand">MVC INTRO</div>
+                        <div class="product-name">@CleanName(item.Name)</div>
+                        <div class="d-flex align-items-end justify-content-between gap-2 mt-2">
+                            <div class="product-price">@string.Format("€{0:0.00}", item.Price)</div>
+                            <div class="product-meta text-muted">@item.Color • @item.Size</div>
+                        </div>
+                    </div>
+
+                    <div class="product-actions">
+                        <a class="btn btn-sm btn-dark" asp-controller="Product" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                        <a class="btn btn-sm btn-outline-dark" asp-controller="Cart" asp-action="Add" asp-route-id="@item.Id" asp-route-returnUrl="@returnUrl">Add to cart</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-controller="Product" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <form asp-action="Delete" asp-controller="Product" asp-route-id="@item.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>

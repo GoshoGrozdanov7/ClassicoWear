@@ -1,0 +1,76 @@
+@model MVC.Intro.Controllers.CartController.CartViewModel
+@{
+    ViewData["Title"] = "Cart";
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+
+<h1 class="mb-3">Cart</h1>
+
+@if (!Model.Lines.Any())
+{
+    <div class="alert alert-secondary">Your cart is empty.</div>
+    <a class="btn btn-dark" asp-controller="Product" asp-action="Index">Back to products</a>
+}
+else
+{
+    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
+        <div class="text-muted">Items: @Model.TotalQuantity</div>
+        <form asp-controller="Cart" asp-action="Clear" method="post" class="d-inline">
+            <button type="submit" class="btn btn-outline-danger">Clear cart</button>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th class="text-end">Price</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-end">Total</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var line in Model.Lines)
+                {
+                    <tr>
+                        <td>
+                            <div class="d-flex gap-3 align-items-center">
+                                <img src="~/images/products/@(line.Product.Id).jpg" alt="@line.Product.Name" style="width:64px;height:64px;object-fit:cover;border-radius:10px" onerror="this.style.display='none'" />
+                                <div>
+                                    <div class="fw-semibold">@line.Product.Name</div>
+                                    <div class="small text-muted">@line.Product.Color • @line.Product.Size</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-end">@string.Format("€{0:0.00}", line.Product.Price)</td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <a class="btn btn-sm btn-outline-secondary" asp-controller="Cart" asp-action="Decrease" asp-route-id="@line.Product.Id" asp-route-returnUrl="@returnUrl">-</a>
+                                <span class="btn btn-sm btn-light disabled">@line.Quantity</span>
+                                <a class="btn btn-sm btn-outline-secondary" asp-controller="Cart" asp-action="Add" asp-route-id="@line.Product.Id" asp-route-returnUrl="@returnUrl">+</a>
+                            </div>
+                        </td>
+                        <td class="text-end">@string.Format("€{0:0.00}", line.LineTotal)</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-danger" asp-controller="Cart" asp-action="Remove" asp-route-id="@line.Product.Id" asp-route-returnUrl="@returnUrl">Remove</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end fw-semibold">Grand total</td>
+                    <td class="text-end fw-bold">@string.Format("€{0:0.00}", Model.Total)</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" asp-controller="Product" asp-action="Index">Continue shopping</a>
+        <button class="btn btn-dark" type="button" disabled>Checkout</button>
+    </div>
+}

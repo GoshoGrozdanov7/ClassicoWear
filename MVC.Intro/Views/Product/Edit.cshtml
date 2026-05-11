@@ -1,0 +1,83 @@
+@model MVC.Intro.Models.Product
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Product</h4>
+<hr />
+
+<div class="row g-4">
+    <div class="col-12 col-md-5">
+        <div class="product-img-placeholder rounded">
+            <img class="product-img" src="~/images/products/@(Model.Id).jpg" alt="Product image" onerror="this.style.display='none'" />
+            <div class="product-img-sheen"></div>
+        </div>
+    </div>
+    <div class="col-12 col-md-7">
+        <form asp-action="EditProduct" enctype="multipart/form-data" class="shop-sidebar">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group mb-2">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-2">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-2">
+                <label asp-for="Color" class="control-label"></label>
+                <input asp-for="Color" class="form-control" />
+                <span asp-validation-for="Color" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Size" class="control-label"></label>
+                <select asp-for="Size" class="form-control">
+                    <option value="">-- изберете --</option>
+                    <optgroup label="Дрехи">
+                        <option value="XS">XS</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                        <option value="XXL">XXL</option>
+                    </optgroup>
+                    <optgroup label="Обувки">
+                        @for (var i = 76; i <= 96; i++)
+                        {
+                            var size = (i / 2m).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                            <option value="@size">@size</option>
+                        }
+                    </optgroup>
+                </select>
+                <span asp-validation-for="Size" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label">Смени снимка (JPG)</label>
+                <input type="file" name="image" accept="image/jpeg" class="form-control" />
+                <div class="form-text">Снимката се записва като: <code>/images/products/@(Model.Id).jpg</code></div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-dark">Save</button>
+                <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

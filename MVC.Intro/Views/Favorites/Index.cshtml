@@ -1,0 +1,50 @@
+@model IEnumerable<MVC.Intro.Models.Product>
+@{
+    ViewData["Title"] = "Favorites";
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+
+<h1 class="mb-3">Favorites</h1>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-secondary">You don't have any favorite products yet.</div>
+    <a class="btn btn-dark" asp-controller="Product" asp-action="Index">Back to products</a>
+}
+else
+{
+    <div class="d-flex gap-2 mb-3">
+        <a class="btn btn-outline-secondary" asp-controller="Product" asp-action="Index">Back</a>
+        <form asp-controller="Favorites" asp-action="Clear" method="post" class="d-inline">
+            <button type="submit" class="btn btn-outline-danger">Clear all</button>
+        </form>
+    </div>
+
+    <div class="shop-grid">
+        @foreach (var item in Model)
+        {
+            <div class="product-card">
+                <div class="product-media">
+                    <div class="product-img-placeholder">
+                        <img class="product-img" src="~/images/products/@(item.Id).jpg" alt="@item.Name" onerror="this.style.display='none'" />
+                        <div class="product-img-sheen"></div>
+                    </div>
+                </div>
+
+                <div class="product-body">
+                    <div class="product-brand">MVC INTRO</div>
+                    <div class="product-name">@item.Name</div>
+                    <div class="d-flex align-items-end justify-content-between gap-2 mt-2">
+                        <div class="product-price">@string.Format("€{0:0.00}", item.Price)</div>
+                        <div class="product-meta text-muted">@item.Color • @item.Size</div>
+                    </div>
+                </div>
+
+                <div class="product-actions">
+                    <a class="btn btn-sm btn-dark" asp-controller="Product" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a class="btn btn-sm btn-outline-danger" asp-controller="Favorites" asp-action="Remove" asp-route-id="@item.Id" asp-route-returnUrl="@returnUrl">Remove</a>
+                </div>
+            </div>
+        }
+    </div>
+}
